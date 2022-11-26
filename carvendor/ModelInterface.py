@@ -9,23 +9,34 @@ from scipy import sparse
 
 class ModelInterface:
     # Loading encoder and prediction model
-    model = load('saves/model.save')
-    enc = load('saves/encoder.save')
+    model = load("saves/model.save")
+    enc = load("saves/encoder.save")
 
-    NORMALIZATION_VALUES = [(1.0, 1000000.0), (400.0, 8285.0), (1.0, 1398.0), (1915, 2021)]
+    NORMALIZATION_VALUES = [
+        (1.0, 1000000.0),
+        (400.0, 8285.0),
+        (1.0, 1398.0),
+        (1915, 2021),
+    ]
 
-    CATEGORICAL_COLUMNS = ['Colour', 'Fuel_type', 'Type',
-                           'Transmission', 'Vehicle_model', 'Drive',
-                           'Condition', 'Vehicle_brand']
+    CATEGORICAL_COLUMNS = [
+        "Colour",
+        "Fuel_type",
+        "Type",
+        "Transmission",
+        "Vehicle_model",
+        "Drive",
+        "Condition",
+        "Vehicle_brand",
+    ]
 
-    VALUE_COLUMNS = ['Mileage_km', 'Displacement_cm3', 'Power_HP', 'Production_year']   
+    VALUE_COLUMNS = ["Mileage_km", "Displacement_cm3", "Power_HP", "Production_year"]
 
     # Dictionary to fill with values from website
 
-
     def processing(self, vehicle_dict: dict) -> float:
         """Entire processing dataframe and predicting value
-        
+
         Args:
             vehicle_dict (dict): Dictionary containing car specification
 
@@ -34,15 +45,18 @@ class ModelInterface:
         """
 
         model_input = pd.DataFrame.from_dict([vehicle_dict])
-        
+
         model_input = encode_categories(model_input, CATEGORICAL_COLUMNS)
-        model_input = standarize_columns(model_input, VALUE_COLUMNS, NORMALIZATION_VALUES)
-        
+        model_input = standarize_columns(
+            model_input, VALUE_COLUMNS, NORMALIZATION_VALUES
+        )
+
         predicted_price = predict_price(model_input)
         return predicted_price
 
-
-    def encode_categoriesself(self, dataframe: pd.DataFrame, cols: list) -> pd.DataFrame:
+    def encode_categoriesself(
+        self, dataframe: pd.DataFrame, cols: list
+    ) -> pd.DataFrame:
         """Function for encoding categorical values in dataframe as dummies for prediction model
 
         Args:
@@ -55,13 +69,14 @@ class ModelInterface:
         codes = enc.transform(dataframe[cols]).toarray()
         feature_names = enc.get_feature_names_out(cols)
 
-        values = dataframe.drop(columns = cols)
+        values = dataframe.drop(columns=cols)
         categories = pd.DataFrame(codes, columns=feature_names).astype(int)
 
         return pd.concat([values, categories.set_index(values.index)], axis=1)
 
-
-    def standarize_columns(self, dataframe: pd.DataFrame, cols: list, params: list = None) -> pd.DataFrame:
+    def standarize_columns(
+        self, dataframe: pd.DataFrame, cols: list, params: list = None
+    ) -> pd.DataFrame:
         """Function for normalization continous values in dataframe
 
         Args:
@@ -81,7 +96,6 @@ class ModelInterface:
             return new_dataframe
         else:
             return None
-
 
     def predict_price(self, input: pd.DataFrame) -> float:
         """Function for prediction price of vehicle with given technical specification and features

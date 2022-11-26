@@ -10,6 +10,7 @@ hcv = HeadlessCarVendor()
 async def get_data():
     data = hcv.get_car_data()
 
+
 @app.post("/get_price")
 async def predicted_price():
     return hcv.calculate_price()
