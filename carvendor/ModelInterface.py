@@ -46,15 +46,15 @@ class ModelInterface:
 
         model_input = pd.DataFrame.from_dict([vehicle_dict])
 
-        model_input = encode_categories(model_input, CATEGORICAL_COLUMNS)
-        model_input = standarize_columns(
-            model_input, VALUE_COLUMNS, NORMALIZATION_VALUES
+        model_input = self.encode_categories(model_input, self.CATEGORICAL_COLUMNS)
+        model_input = self.standarize_columns(
+            model_input, self.VALUE_COLUMNS, self.NORMALIZATION_VALUES
         )
 
-        predicted_price = predict_price(model_input)
+        predicted_price = self.predict_price(model_input)
         return predicted_price
 
-    def encode_categoriesself(
+    def encode_categories(
         self, dataframe: pd.DataFrame, cols: list
     ) -> pd.DataFrame:
         """Function for encoding categorical values in dataframe as dummies for prediction model
@@ -66,8 +66,8 @@ class ModelInterface:
         Returns:
             pd.DataFrame: Copy of dataframe with encoded categorical values
         """
-        codes = enc.transform(dataframe[cols]).toarray()
-        feature_names = enc.get_feature_names_out(cols)
+        codes = self.enc.transform(dataframe[cols]).toarray()
+        feature_names = self.enc.get_feature_names_out(cols)
 
         values = dataframe.drop(columns=cols)
         categories = pd.DataFrame(codes, columns=feature_names).astype(int)
@@ -107,5 +107,5 @@ class ModelInterface:
             float: Predicted vehicle price
         """
         input = sparse.coo_matrix(input)
-        predicted_price = model.predict(input)
+        predicted_price = self.model.predict(input)
         return predicted_price[0]

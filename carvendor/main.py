@@ -1,16 +1,12 @@
-from fastapi import FastAPI
-from carvendor import HeadlessCarVendor
+from fastapi import FastAPI, Request
+from carvendor import HeadlessCarVendor, CarData
+import json
 
 app = FastAPI()
 
 hcv = HeadlessCarVendor()
 
-
-@app.get("/get_data")
-async def get_data():
-    data = hcv.get_car_data()
-
-
-@app.post("/post_price")
-async def predicted_price():
-    return hcv.calculate_price()
+@app.post("/calculate_price")
+async def calculate_price(car_data: CarData):
+    print(car_data)
+    return hcv.calculate_price(car_data)
